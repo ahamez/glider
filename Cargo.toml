@@ -1,0 +1,6 @@
+[package]
+name = "glider"
+version = "0.1.0"
+authors = ["Alexandre Hamez <alexandre.hamez@gmail.com>"]
+
+[dependencies]
