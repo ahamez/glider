@@ -1,5 +1,9 @@
 /* --------------------------------------------------------------------------------------------- */
 
+use super::rle::{Rle, RleEntry};
+
+/* --------------------------------------------------------------------------------------------- */
+
 // TODO. Make this a trait
 //  - random access
 //  - build
@@ -37,6 +41,33 @@ impl Grid {
       for y in 0 .. g[0].len() {
         grid.set(x, y, g[x][y]);
       }
+    }
+
+    grid
+  }
+
+  pub fn new_from_rle(rle: &Rle) -> Self {
+    let mut grid = Self::new_empty(rle.nb_lines, rle.nb_columns);
+
+    let mut x = 0;
+    let mut y = 0;
+
+    for entry in &rle.pattern {
+      match entry {
+        &RleEntry::Live(nb) => {
+          for ypos in y .. y + nb {
+            grid.set(x, ypos, true);
+          }
+          y = y + nb;
+        }
+        &RleEntry::Dead(nb) => {
+          y = y + nb;
+        }
+        &RleEntry::NewLine  => {
+          x = x + 1;
+          y = 0;
+        }
+      };
     }
 
     grid
@@ -132,6 +163,42 @@ fn test_count_live_neighbours() {
     assert_eq!(g.count_live_neighbours(1, 1), 2);
     assert_eq!(g.count_live_neighbours(1, 2), 2);
   }
+}
+
+/* --------------------------------------------------------------------------------------------- */
+
+#[test]
+fn test_new_from_rle() {
+
+  // 3o$2bo$bo!
+  let rle = Rle {
+    pattern: vec![
+      RleEntry::Live(3), 
+      RleEntry::NewLine,
+      RleEntry::Dead(2),
+      RleEntry::Live(1),
+      RleEntry::NewLine,
+      RleEntry::Dead(1),
+      RleEntry::Live(1),
+    ],
+
+    nb_lines: 3,
+    nb_columns: 3,
+  };
+
+  let g = Grid::new_from_rle(&rle);
+
+  assert_eq!(g.at(0, 0), true);
+  assert_eq!(g.at(0, 1), true);
+  assert_eq!(g.at(0, 2), true);
+
+  assert_eq!(g.at(1, 0), false);
+  assert_eq!(g.at(1, 1), false);
+  assert_eq!(g.at(1, 2), true);
+
+  assert_eq!(g.at(2, 0), false);
+  assert_eq!(g.at(2, 1), true);
+  assert_eq!(g.at(2, 2), false);
 }
 
 /* --------------------------------------------------------------------------------------------- */
