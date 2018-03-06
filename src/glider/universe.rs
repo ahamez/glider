@@ -14,15 +14,7 @@ pub struct Universe {
 
 impl Universe {
   
-  pub fn new(columns: usize, lines: usize) -> Self {
-    Universe{
-      grid: Grid::new(columns, lines),
-      generation: 0,
-      live_cells: 0,
-    }
-  }
-
-  pub fn new_from(grid: Grid) -> Self {
+  pub fn new(grid: Grid) -> Self {
     let live_cells = grid.count_live_cells();
 
     Universe{
@@ -99,7 +91,7 @@ fn test_tick() {
   // Other dead cells.
   assert!(!tick_cell(&g, 4, 0));
 
-  let u = Universe::new_from(g);
+  let u = Universe::new(g);
   assert_eq!(u.live_cells, 8);
   assert_eq!(u.generation, 0);
 

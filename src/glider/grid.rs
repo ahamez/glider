@@ -7,7 +7,7 @@
 
 #[derive(Clone)]
 pub struct Grid {
-  data: Vec<Vec<bool>>,
+  grid: Vec<Vec<bool>>,
   nb_lines: usize,
   nb_columns: usize,
 }
@@ -16,56 +16,56 @@ pub struct Grid {
 
 impl Grid {
 
-  pub fn new(nb_lines: usize, nb_columns: usize) -> Self {
+  fn new_empty(nb_lines: usize, nb_columns: usize) -> Self {
     let mut line = Vec::new();
     line.resize(nb_columns + 2, false);
 
-    let mut data = Vec::new();
-    data.resize(nb_lines + 2, line);
+    let mut grid = Vec::new();
+    grid.resize(nb_lines + 2, line);
 
-    Grid{data, nb_columns, nb_lines}
+    Grid{grid, nb_columns, nb_lines}
   }
 
-  pub fn new_from(data: &Vec<Vec<bool>>) -> Self {
-    assert!(data.len() >= 1);
-    assert!(data[0].len() >= 1);
+  pub fn new_from(g: &Vec<Vec<bool>>) -> Self {
+    assert!(g.len() >= 1);
+    assert!(g[0].len() >= 1);
     // TODO. Check size consistency
 
-    let mut g = Self::new(data.len() + 2, data[0].len() + 2);
+    let mut grid = Self::new_empty(g.len() + 2, g[0].len() + 2);
 
-    for x in 0 .. data.len() {
-      for y in 0 .. data[0].len() {
-        g.set(x, y, data[x][y]);
+    for x in 0 .. g.len() {
+      for y in 0 .. g[0].len() {
+        grid.set(x, y, g[x][y]);
       }
     }
 
-    g
+    grid
   }
 
   pub fn at(&self, x: usize, y: usize) -> bool {
-    self.data[x+1][y+1]
+    self.grid[x+1][y+1]
   }
 
   pub fn set(&mut self, x: usize, y: usize, value: bool) -> &mut Self {
-    self.data[x+1][y+1] = value;
+    self.grid[x+1][y+1] = value;
     self
   }
 
   pub fn count_live_neighbours(&self, x: usize, y: usize) -> u8 {
-    debug_assert!(self.data.len() > 2);
-    debug_assert!(self.data[0].len() > 2);
+    debug_assert!(self.grid.len() > 2);
+    debug_assert!(self.grid[0].len() > 2);
 
     let x = x + 1;
     let y = y + 1;
 
-      self.data[x-1][y-1] as u8
-    + self.data[x-1][y  ] as u8
-    + self.data[x-1][y+1] as u8
-    + self.data[x  ][y-1] as u8
-    + self.data[x  ][y+1] as u8
-    + self.data[x+1][y-1] as u8
-    + self.data[x+1][y  ] as u8
-    + self.data[x+1][y+1] as u8
+      self.grid[x-1][y-1] as u8
+    + self.grid[x-1][y  ] as u8
+    + self.grid[x-1][y+1] as u8
+    + self.grid[x  ][y-1] as u8
+    + self.grid[x  ][y+1] as u8
+    + self.grid[x+1][y-1] as u8
+    + self.grid[x+1][y  ] as u8
+    + self.grid[x+1][y+1] as u8
   }
 
   pub fn nb_lines(&self) -> usize {
@@ -77,7 +77,7 @@ impl Grid {
   }
 
   pub fn count_live_cells(&self) -> u64 {
-    self.data.iter()
+    self.grid.iter()
       .fold(0, |acc, ref col| acc + col.iter().fold(0, |acc, ref cell| acc + **cell as u64))
   }
 }
