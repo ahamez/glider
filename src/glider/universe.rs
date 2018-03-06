@@ -76,7 +76,7 @@ fn tick_cell(grid: &Grid, x: usize, y: usize) -> bool {
 
 #[test]
 fn test_tick() {
-  let g = Grid::new_from(vec![
+  let g = Grid::new_from(&vec![
       //   0      1      2      3      4  
     vec![true , false, true , false, false], // 0
     vec![false, false, true , false, false], // 1

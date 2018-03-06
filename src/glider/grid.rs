@@ -26,7 +26,7 @@ impl Grid {
     Grid{data, nb_columns, nb_lines}
   }
 
-  pub fn new_from(data: Vec<Vec<bool>>) -> Self {
+  pub fn new_from(data: &Vec<Vec<bool>>) -> Self {
     assert!(data.len() >= 1);
     assert!(data[0].len() >= 1);
     // TODO. Check size consistency
@@ -89,7 +89,7 @@ impl Grid {
 fn test_count_live_neighbours() {
   {
     // 1x1 universe
-    let g = Grid::new_from(vec![
+    let g = Grid::new_from(&vec![
       vec![false],
     ]);
 
@@ -97,7 +97,7 @@ fn test_count_live_neighbours() {
   }
   {
     // 1x1 universe
-    let g = Grid::new_from(vec![
+    let g = Grid::new_from(&vec![
       vec![true],
     ]);
 
@@ -105,7 +105,7 @@ fn test_count_live_neighbours() {
   }
   {
     // 2x2 universe
-    let g = Grid::new_from(vec![
+    let g = Grid::new_from(&vec![
         //   0       1
       vec![true , false], // 0
       vec![false, true ], // 1
@@ -118,7 +118,7 @@ fn test_count_live_neighbours() {
   }
   {
     // 3x3 universe
-    let g = Grid::new_from(vec![
+    let g = Grid::new_from(&vec![
         //   0      1      2
       vec![true , false, true ], // 0
       vec![false, true , false], // 1
