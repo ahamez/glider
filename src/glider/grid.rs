@@ -5,7 +5,7 @@
 //  - build
 //  - count_live_neighbours
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Grid {
   grid: Vec<Vec<bool>>,
   nb_lines: usize,

@@ -4,6 +4,7 @@ use super::grid::Grid;
 
 /* --------------------------------------------------------------------------------------------- */
 
+#[derive(Debug)]
 pub struct Universe {
   grid: Grid,
   generation: u64,
