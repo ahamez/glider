@@ -20,7 +20,7 @@ fn main() {
     ]
   };
 
-  let grid = Box::new(DenseGrid::new_from_rle(&rle));
+  let grid = Box::new(DenseGrid::new_from_rle(&rle, 1024, 1024));
   let u = Universe::new(grid);
 
   u.tick();

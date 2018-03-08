@@ -42,12 +42,18 @@ impl DenseGrid {
     grid
   }
 
-  pub fn new_from_rle(rle: &Rle) -> Self {
+  pub fn new_from_rle(rle: &Rle, rows: usize, columns: usize) -> Self {
     let bounds = rle.bounds();
-    let mut grid = Self::new(bounds.0, bounds.1);
+    let rows = usize::max(rows, bounds.0);
+    let columns = usize::max(columns, bounds.1);
 
-    let mut row = 0;
-    let mut col = 0;
+    let mut grid = Self::new(rows, columns);
+
+    let row_shift = rows/2 - bounds.0/2;
+    let col_shift = columns/2 - bounds.1/2;
+
+    let mut row = row_shift;
+    let mut col = col_shift;
 
     for entry in &rle.pattern {
       match entry {
@@ -62,7 +68,7 @@ impl DenseGrid {
         }
         &RleEntry::NewLine  => {
           row = row + 1;
-          col = 0;
+          col = col_shift;
         }
       };
     }
@@ -188,7 +194,8 @@ fn test_new_from_rle() {
     ]
   };
 
-  let g = DenseGrid::new_from_rle(&rle);
+  let bounds = rle.bounds();
+  let g = DenseGrid::new_from_rle(&rle, bounds.0, bounds.1);
 
   assert_eq!(g.at(RowCol{row: 0, col: 0}), true);
   assert_eq!(g.at(RowCol{row: 0, col: 1}), true);
