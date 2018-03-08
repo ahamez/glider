@@ -1,6 +1,6 @@
 /* --------------------------------------------------------------------------------------------- */
 
-use super::grid::Grid;
+use super::grid::{Grid, RowCol};
 
 /* --------------------------------------------------------------------------------------------- */
 
@@ -28,11 +28,11 @@ impl Universe {
     let mut next_grid = self.grid.clone();
     let mut live_cells = 0;
 
-    for x in 0 .. self.grid.nb_lines() {
-      for y in 0 .. self.grid.nb_columns() {
-        if tick_cell(&self.grid, x, y) {
+    for row in 0 .. self.grid.nb_lines() {
+      for col in 0 .. self.grid.nb_columns() {
+        if tick_cell(&self.grid, row, col) {
           live_cells += 1;
-          next_grid.set(x, y, true);
+          next_grid.set(RowCol{row, col}, true);
         }
       }
     }
@@ -55,8 +55,8 @@ impl Universe {
 
 /* --------------------------------------------------------------------------------------------- */
 
-fn tick_cell(grid: &Box<Grid>, x: usize, y: usize) -> bool {
-  match (grid.at(x, y), grid.count_live_neighbours(x, y)) {
+fn tick_cell(grid: &Box<Grid>, row: usize, col: usize) -> bool {
+  match (grid.at(RowCol{row, col}), grid.count_live_neighbours(RowCol{row, col})) {
     (true , 2 ... 3) => true,
     (false, 3      ) => true,
     (_    , _      ) => false,
@@ -70,11 +70,11 @@ fn tick_cell(grid: &Box<Grid>, x: usize, y: usize) -> bool {
 mod test {
 
   use super::*;
-  use glider::bounded_grid::BoundedGrid;
+  use glider::dense_grid::DenseGrid;
 
   #[test]
   fn test_tick() {
-    let g : Box<Grid> = Box::new(BoundedGrid::new_from(&vec![
+    let g : Box<Grid> = Box::new(DenseGrid::new_from(&vec![
         //   0      1      2      3      4  
       vec![true , false, true , false, false], // 0
       vec![false, false, true , false, false], // 1

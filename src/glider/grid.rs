@@ -1,9 +1,17 @@
 /* --------------------------------------------------------------------------------------------- */
 
+#[derive(Clone, Debug)]
+pub struct RowCol {
+  pub row: usize,
+  pub col: usize,
+}
+
+/* --------------------------------------------------------------------------------------------- */
+
 pub trait Grid {
-  fn at(&self, x: usize, y: usize) -> bool;
-  fn set(&mut self, x: usize, y: usize, value: bool);
-  fn count_live_neighbours(&self, x: usize, y: usize) -> u8;
+  fn at(&self, rc: RowCol) -> bool;
+  fn set(&mut self, rc: RowCol, value: bool);
+  fn count_live_neighbours(&self, rc: RowCol) -> u8;
   fn count_live_cells(&self) -> u64;
   fn nb_lines(&self) -> usize;
   fn nb_columns(&self) -> usize;
