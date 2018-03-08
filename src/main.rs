@@ -17,10 +17,7 @@ fn main() {
       RleEntry::NewLine,
       RleEntry::Dead(1),
       RleEntry::Live(1),
-    ],
-
-    nb_lines: 3,
-    nb_columns: 3,
+    ]
   };
 
   let grid = Box::new(DenseGrid::new_from_rle(&rle));

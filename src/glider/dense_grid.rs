@@ -43,7 +43,8 @@ impl DenseGrid {
   }
 
   pub fn new_from_rle(rle: &Rle) -> Self {
-    let mut grid = Self::new(rle.nb_lines, rle.nb_columns);
+    let bounds = rle.bounds();
+    let mut grid = Self::new(bounds.0, bounds.1);
 
     let mut row = 0;
     let mut col = 0;
@@ -184,10 +185,7 @@ fn test_new_from_rle() {
       RleEntry::NewLine,
       RleEntry::Dead(1),
       RleEntry::Live(1),
-    ],
-
-    nb_lines: 3,
-    nb_columns: 3,
+    ]
   };
 
   let g = DenseGrid::new_from_rle(&rle);
