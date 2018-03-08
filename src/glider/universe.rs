@@ -4,17 +4,17 @@ use super::grid::{Grid, RowCol};
 
 /* --------------------------------------------------------------------------------------------- */
 
-pub struct Universe {
-  grid: Box<Grid>,
+pub struct Universe<G> {
   generation: u64,
   live_cells: u64,
+  grid: G,
 }
 
 /* --------------------------------------------------------------------------------------------- */
 
-impl Universe {
+impl<G: Grid> Universe<G> {
   
-  pub fn new(grid: Box<Grid>) -> Self {
+  pub fn new(grid: G) -> Self {
     let live_cells = grid.count_live_cells();
 
     Universe{
@@ -25,12 +25,13 @@ impl Universe {
   }
 
   pub fn tick(&self) -> Self {
-    let mut next_grid = self.grid.clone();
+
+    let mut next_grid = G::new(self.grid.nb_lines(), self.grid.nb_columns());
     let mut live_cells = 0;
 
     for row in 0 .. self.grid.nb_lines() {
       for col in 0 .. self.grid.nb_columns() {
-        if tick_cell(&self.grid, row, col) {
+        if self.tick_cell(row, col) {
           live_cells += 1;
           next_grid.set(RowCol{row, col}, true);
         }
@@ -51,15 +52,17 @@ impl Universe {
   pub fn live_cells(&self) -> u64 {
     self.live_cells
   }
-}
 
-/* --------------------------------------------------------------------------------------------- */
+  pub fn at(&self, row: usize, col: usize) -> bool {
+    self.grid.at(RowCol{row, col})
+  }
 
-fn tick_cell(grid: &Box<Grid>, row: usize, col: usize) -> bool {
-  match (grid.at(RowCol{row, col}), grid.count_live_neighbours(RowCol{row, col})) {
-    (true , 2 ... 3) => true,
-    (false, 3      ) => true,
-    (_    , _      ) => false,
+  fn tick_cell(&self, row: usize, col: usize) -> bool {
+    match (self.grid.at(RowCol{row, col}), self.grid.count_live_neighbours(RowCol{row, col})) {
+      (true , 2 ... 3) => true,
+      (false, 3      ) => true,
+      (_    , _      ) => false,
+    }
   }
 }
 
@@ -74,7 +77,7 @@ mod test {
 
   #[test]
   fn test_tick() {
-    let g : Box<Grid> = Box::new(DenseGrid::new_from(&vec![
+    let u = Universe::new(DenseGrid::new_from(&vec![
         //   0      1      2      3      4  
       vec![true , false, true , false, false], // 0
       vec![false, false, true , false, false], // 1
@@ -84,20 +87,20 @@ mod test {
     ]));
 
     // Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.
-    assert!(!tick_cell(&g, 0, 0));
-    assert!(!tick_cell(&g, 0, 2));
+    assert!(!u.tick_cell(0, 0));
+    assert!(!u.tick_cell(0, 2));
     // Any live cell with two or three live neighbours lives on to the next generation.
-    assert!( tick_cell(&g, 1, 2));
-    assert!( tick_cell(&g, 4, 4));
+    assert!( u.tick_cell(1, 2));
+    assert!( u.tick_cell(4, 4));
     // Any live cell with more than three live neighbours dies, as if by overpopulation.
-    assert!(!tick_cell(&g, 3, 3));
+    assert!(!u.tick_cell(3, 3));
 
     // Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
-    assert!( tick_cell(&g, 3, 2));
+    assert!( u.tick_cell(3, 2));
     // Other dead cells.
-    assert!(!tick_cell(&g, 4, 0));
+    assert!(!u.tick_cell(4, 0));
 
-    let u = Universe::new(g);
+    // let u = Universe::new(g);
     assert_eq!(u.live_cells, 8);
     assert_eq!(u.generation, 0);
 

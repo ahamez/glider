@@ -19,9 +19,9 @@ fn main() {
       RleEntry::Live(1),
     ]
   };
+  let grid = DenseGrid::new_from_rle(&rle, 100, 100);
+  let mut u = Universe::new(grid);
 
-  let grid = Box::new(DenseGrid::new_from_rle(&rle, 1024, 1024));
-  let u = Universe::new(grid);
 
   u.tick();
 }

@@ -16,16 +16,6 @@ pub struct DenseGrid {
 
 impl DenseGrid {
 
-  fn new(nb_lines: usize, nb_columns: usize) -> Self {
-    let mut line = Vec::new();
-    line.resize(nb_columns + 2, false);
-
-    let mut grid = Vec::new();
-    grid.resize(nb_lines + 2, line);
-
-    DenseGrid{grid, nb_columns, nb_lines}
-  }
-
   pub fn new_from(g: &Vec<Vec<bool>>) -> Self {
     assert!(g.len() >= 1);
     assert!(g[0].len() >= 1);
@@ -81,6 +71,17 @@ impl DenseGrid {
 
 impl Grid for DenseGrid {
 
+  fn new(nb_lines: usize, nb_columns: usize) -> Self {
+    let mut line = Vec::new();
+    line.resize(nb_columns + 2, false);
+
+    let mut grid = Vec::new();
+    grid.resize(nb_lines + 2, line);
+
+    DenseGrid{grid, nb_columns, nb_lines}
+  }
+
+
   fn at(&self, rc: RowCol) -> bool {
     self.grid[rc.row + 1][rc.col + 1]
   }
@@ -117,10 +118,6 @@ impl Grid for DenseGrid {
   fn count_live_cells(&self) -> u64 {
     self.grid.iter()
       .fold(0, |acc, ref col| acc + col.iter().fold(0, |acc, ref cell| acc + **cell as u64))
-  }
-
-  fn box_clone(&self) -> Box<Grid> {
-    Box::new(self.clone())
   }
 }
 
