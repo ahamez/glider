@@ -19,10 +19,10 @@ fn main() {
   let rle = Rle {
     pattern: vec![
       RleEntry::Live(3), 
-      RleEntry::NewLine,
+      RleEntry::NewRow,
       RleEntry::Dead(2),
       RleEntry::Live(1),
-      RleEntry::NewLine,
+      RleEntry::NewRow,
       RleEntry::Dead(1),
       RleEntry::Live(1),
     ]
@@ -31,11 +31,11 @@ fn main() {
   // let rle = Rle {
   //   pattern: vec![
   //     RleEntry::Live(3), 
-  //     RleEntry::NewLine,
+  //     RleEntry::NewRow,
   //     RleEntry::Live(1),
   //     RleEntry::Dead(1),
   //     RleEntry::Live(1),
-  //     RleEntry::NewLine,
+  //     RleEntry::NewRow,
   //     RleEntry::Live(3),
   //   ]
   // };

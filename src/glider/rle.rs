@@ -4,7 +4,7 @@
 pub enum RleEntry {
   Live(usize),
   Dead(usize),
-  NewLine,
+  NewRow,
 }
 
 /* --------------------------------------------------------------------------------------------- */
@@ -17,7 +17,7 @@ pub struct Rle {
 /* --------------------------------------------------------------------------------------------- */
 
 impl Rle {
-  pub fn bounds(&self) -> (usize, usize) {
+  pub fn dimension(&self) -> (usize, usize) {
 
     if self.pattern.is_empty() {
       return (0, 0)
@@ -37,14 +37,14 @@ impl Rle {
           cols += nb;
           max_cols = usize::max(cols, max_cols);
         }
-        &RleEntry::NewLine  => {
+        &RleEntry::NewRow  => {
           rows += 1;
           cols = 0;
         }
       };
     }
   
-    if let RleEntry::NewLine = self.pattern[self.pattern.len() - 1]  {
+    if let RleEntry::NewRow = self.pattern[self.pattern.len() - 1]  {
       (rows, max_cols)
     }
     else {
@@ -56,76 +56,76 @@ impl Rle {
 /* --------------------------------------------------------------------------------------------- */
 
 #[test]
-fn test_bounds() {
+fn test_dimension() {
   {
     let rle = Rle {
       pattern: vec![]
     };
 
-    assert_eq!(rle.bounds(), (0, 0));
+    assert_eq!(rle.dimension(), (0, 0));
   }
   {
     let rle = Rle {
       pattern: vec![
-        RleEntry::NewLine,
+        RleEntry::NewRow,
       ]
     };
 
-    assert_eq!(rle.bounds(), (1, 0));
-  }
-  {
-    let rle = Rle {
-      pattern: vec![
-        RleEntry::Live(1),
-        RleEntry::Dead(2),
-      ]
-    };
-
-    assert_eq!(rle.bounds(), (1, 3));
+    assert_eq!(rle.dimension(), (1, 0));
   }
   {
     let rle = Rle {
       pattern: vec![
         RleEntry::Live(1),
         RleEntry::Dead(2),
-        RleEntry::NewLine,
       ]
     };
 
-    assert_eq!(rle.bounds(), (1, 3));
+    assert_eq!(rle.dimension(), (1, 3));
+  }
+  {
+    let rle = Rle {
+      pattern: vec![
+        RleEntry::Live(1),
+        RleEntry::Dead(2),
+        RleEntry::NewRow,
+      ]
+    };
+
+    assert_eq!(rle.dimension(), (1, 3));
   }
   {
     // 3o$2bo$bo!
     let rle = Rle {
       pattern: vec![
         RleEntry::Live(3), 
-        RleEntry::NewLine,
+        RleEntry::NewRow,
         RleEntry::Dead(2),
         RleEntry::Live(1),
-        RleEntry::NewLine,
+        RleEntry::NewRow,
         RleEntry::Dead(1),
         RleEntry::Live(1),
-        RleEntry::NewLine,
+        RleEntry::NewRow,
       ]
     };
     
-    assert_eq!(rle.bounds(), (3, 3));
+    assert_eq!(rle.dimension(), (3, 3));
   }
   {
     // 3o$2bo$bo!
     let rle = Rle {
       pattern: vec![
         RleEntry::Live(3), 
-        RleEntry::NewLine,
+        RleEntry::NewRow,
         RleEntry::Dead(2),
         RleEntry::Live(1),
-        RleEntry::NewLine,
+        RleEntry::NewRow,
         RleEntry::Dead(1),
         RleEntry::Live(1),
       ]
     };
     
-    assert_eq!(rle.bounds(), (3, 3));
+    assert_eq!(rle.dimension(), (3, 3));
   }
 }
 

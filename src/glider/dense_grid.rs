@@ -8,8 +8,8 @@ use super::rle::{Rle, RleEntry};
 #[derive(Clone, Debug)]
 pub struct DenseGrid {
   grid: Vec<Vec<bool>>,
-  nb_lines: usize,
-  nb_columns: usize,
+  nb_rows: usize,
+  nb_cols: usize,
 }
 
 /* --------------------------------------------------------------------------------------------- */
@@ -33,14 +33,15 @@ impl DenseGrid {
   }
 
   pub fn new_from_rle(rle: &Rle, rows: usize, columns: usize) -> Self {
-    let bounds = rle.bounds();
-    let rows = usize::max(rows, bounds.0);
-    let columns = usize::max(columns, bounds.1);
+    let (rle_rows, rle_cols) = rle.dimension();
+    let rows = usize::max(rows, rle_rows);
+    let columns = usize::max(columns, rle_cols);
 
     let mut grid = Self::new(rows, columns);
 
-    let row_shift = rows/2 - bounds.0/2;
-    let col_shift = columns/2 - bounds.1/2;
+    // TODO. RLE dimension might be bigger than the grid's.
+    let row_shift = rows/2 - rle_rows/2;
+    let col_shift = columns/2 - rle_cols/2;
 
     let mut row = row_shift;
     let mut col = col_shift;
@@ -56,7 +57,7 @@ impl DenseGrid {
         &RleEntry::Dead(nb) => {
           col = col + nb;
         }
-        &RleEntry::NewLine  => {
+        &RleEntry::NewRow  => {
           row = row + 1;
           col = col_shift;
         }
@@ -71,14 +72,14 @@ impl DenseGrid {
 
 impl Grid for DenseGrid {
 
-  fn new(nb_lines: usize, nb_columns: usize) -> Self {
-    let mut line = Vec::new();
-    line.resize(nb_columns + 2, false);
+  fn new(nb_rows: usize, nb_cols: usize) -> Self {
+    let mut row = Vec::new();
+    row.resize(nb_cols + 2, false);
 
     let mut grid = Vec::new();
-    grid.resize(nb_lines + 2, line);
+    grid.resize(nb_rows + 2, row);
 
-    DenseGrid{grid, nb_columns, nb_lines}
+    DenseGrid{grid, nb_cols, nb_rows}
   }
 
 
@@ -107,12 +108,12 @@ impl Grid for DenseGrid {
     + self.grid[x+1][y+1] as u8
   }
 
-  fn nb_lines(&self) -> usize {
-    self.nb_lines
+  fn nb_rows(&self) -> usize {
+    self.nb_rows
   }
 
   fn nb_columns(&self) -> usize {
-    self.nb_columns
+    self.nb_cols
   }
 
   fn count_live_cells(&self) -> u64 {
@@ -182,17 +183,17 @@ fn test_new_from_rle() {
   let rle = Rle {
     pattern: vec![
       RleEntry::Live(3), 
-      RleEntry::NewLine,
+      RleEntry::NewRow,
       RleEntry::Dead(2),
       RleEntry::Live(1),
-      RleEntry::NewLine,
+      RleEntry::NewRow,
       RleEntry::Dead(1),
       RleEntry::Live(1),
     ]
   };
 
-  let bounds = rle.bounds();
-  let g = DenseGrid::new_from_rle(&rle, bounds.0, bounds.1);
+  let dimension = rle.dimension();
+  let g = DenseGrid::new_from_rle(&rle, dimension.0, dimension.1);
 
   assert_eq!(g.at(RowCol{row: 0, col: 0}), true);
   assert_eq!(g.at(RowCol{row: 0, col: 1}), true);

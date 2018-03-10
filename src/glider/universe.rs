@@ -26,10 +26,10 @@ impl<G: Grid> Universe<G> {
 
   pub fn tick(&self) -> Self {
 
-    let mut next_grid = G::new(self.grid.nb_lines(), self.grid.nb_columns());
+    let mut next_grid = G::new(self.grid.nb_rows(), self.grid.nb_columns());
     let mut live_cells = 0;
 
-    for row in 0 .. self.grid.nb_lines() {
+    for row in 0 .. self.grid.nb_rows() {
       for col in 0 .. self.grid.nb_columns() {
         if self.tick_cell(row, col) {
           live_cells += 1;
