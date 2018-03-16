@@ -112,7 +112,7 @@ fn test_dimension() {
     assert_eq!(rle.dimension(), (3, 3));
   }
   {
-    // 3o$2bo$bo!
+    // 3o$2bo$bo
     let rle = Rle {
       pattern: vec![
         RleEntry::Live(3),
