@@ -13,7 +13,7 @@ pub struct Universe<G> {
 /* --------------------------------------------------------------------------------------------- */
 
 impl<G: Grid> Universe<G> {
-  
+
   pub fn new(grid: G) -> Self {
     let live_cells = grid.count_live_cells();
 
@@ -37,7 +37,7 @@ impl<G: Grid> Universe<G> {
         }
       }
     }
-    
+
     Universe {
       grid: next_grid,
       generation: self.generation + 1,
@@ -78,7 +78,7 @@ mod test {
   #[test]
   fn test_tick() {
     let u = Universe::new(DenseGrid::new_from(&vec![
-        //   0      1      2      3      4  
+        //   0      1      2      3      4
       vec![true , false, true , false, false], // 0
       vec![false, false, true , false, false], // 1
       vec![false, false, true , false, false], // 2

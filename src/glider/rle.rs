@@ -43,7 +43,7 @@ impl Rle {
         }
       };
     }
-  
+
     if let RleEntry::NewRow = self.pattern[self.pattern.len() - 1]  {
       (rows, max_cols)
     }
@@ -98,7 +98,7 @@ fn test_dimension() {
     // 3o$2bo$bo!
     let rle = Rle {
       pattern: vec![
-        RleEntry::Live(3), 
+        RleEntry::Live(3),
         RleEntry::NewRow,
         RleEntry::Dead(2),
         RleEntry::Live(1),
@@ -108,14 +108,14 @@ fn test_dimension() {
         RleEntry::NewRow,
       ]
     };
-    
+
     assert_eq!(rle.dimension(), (3, 3));
   }
   {
     // 3o$2bo$bo!
     let rle = Rle {
       pattern: vec![
-        RleEntry::Live(3), 
+        RleEntry::Live(3),
         RleEntry::NewRow,
         RleEntry::Dead(2),
         RleEntry::Live(1),
@@ -124,7 +124,7 @@ fn test_dimension() {
         RleEntry::Live(1),
       ]
     };
-    
+
     assert_eq!(rle.dimension(), (3, 3));
   }
 }

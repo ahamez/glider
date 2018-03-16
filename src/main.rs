@@ -18,7 +18,7 @@ fn main() {
 
   let rle = Rle {
     pattern: vec![
-      RleEntry::Live(3), 
+      RleEntry::Live(3),
       RleEntry::NewRow,
       RleEntry::Dead(2),
       RleEntry::Live(1),
@@ -30,7 +30,7 @@ fn main() {
 
   // let rle = Rle {
   //   pattern: vec![
-  //     RleEntry::Live(3), 
+  //     RleEntry::Live(3),
   //     RleEntry::NewRow,
   //     RleEntry::Live(1),
   //     RleEntry::Dead(1),
@@ -77,13 +77,13 @@ fn main() {
   canvas.set_draw_color(background_color);
   canvas.clear();
   canvas.present();
-  
+
   let mut event_pump = sdl_context
     .event_pump()
     .unwrap();
 
   'running: loop {
-      
+
     for event in event_pump.poll_iter() {
       match event {
         Event::Quit {..} | Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
@@ -92,7 +92,7 @@ fn main() {
         _ => {}
       }
     }
-      
+
     u = u.tick();
     // println!("gen: {}, live: {}", u.generation(), u.live_cells());
 

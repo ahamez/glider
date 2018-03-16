@@ -182,7 +182,7 @@ fn test_new_from_rle() {
   // 3o$2bo$bo!
   let rle = Rle {
     pattern: vec![
-      RleEntry::Live(3), 
+      RleEntry::Live(3),
       RleEntry::NewRow,
       RleEntry::Dead(2),
       RleEntry::Live(1),
