@@ -55,7 +55,6 @@ impl Rle {
     }
   }
 
-  // Todo: use Result as return type.
   pub fn read<R: Read>(reader: BufReader<R>) -> io::Result<Self> {
     let mut pattern = vec![];
 
