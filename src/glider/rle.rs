@@ -65,10 +65,10 @@ impl Rle {
       if line.is_empty() {
         continue;
       }
-      else if line.chars().next().unwrap() == '#' {
+      else if line.starts_with('#') {
         continue;
       }
-      else if line.chars().next().unwrap() == 'x' {
+      else if line.starts_with('x') {
         continue;
       }
       else {
