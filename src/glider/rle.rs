@@ -4,7 +4,7 @@
 pub enum RleEntry {
   Live(usize),
   Dead(usize),
-  NewRow,
+  NewRow(usize),
 }
 
 /* --------------------------------------------------------------------------------------------- */
@@ -37,14 +37,14 @@ impl Rle {
           cols += nb;
           max_cols = usize::max(cols, max_cols);
         }
-        &RleEntry::NewRow  => {
-          rows += 1;
+        &RleEntry::NewRow(nb)  => {
+          rows += nb;
           cols = 0;
         }
       };
     }
 
-    if let RleEntry::NewRow = self.pattern[self.pattern.len() - 1]  {
+    if let RleEntry::NewRow(_) = self.pattern[self.pattern.len() - 1]  {
       (rows, max_cols)
     }
     else {
@@ -67,11 +67,11 @@ fn test_dimension() {
   {
     let rle = Rle {
       pattern: vec![
-        RleEntry::NewRow,
+        RleEntry::NewRow(10),
       ]
     };
 
-    assert_eq!(rle.dimension(), (1, 0));
+    assert_eq!(rle.dimension(), (10, 0));
   }
   {
     let rle = Rle {
@@ -88,7 +88,7 @@ fn test_dimension() {
       pattern: vec![
         RleEntry::Live(1),
         RleEntry::Dead(2),
-        RleEntry::NewRow,
+        RleEntry::NewRow(1),
       ]
     };
 
@@ -99,13 +99,13 @@ fn test_dimension() {
     let rle = Rle {
       pattern: vec![
         RleEntry::Live(3),
-        RleEntry::NewRow,
+        RleEntry::NewRow(1),
         RleEntry::Dead(2),
         RleEntry::Live(1),
-        RleEntry::NewRow,
+        RleEntry::NewRow(1),
         RleEntry::Dead(1),
         RleEntry::Live(1),
-        RleEntry::NewRow,
+        RleEntry::NewRow(1),
       ]
     };
 
@@ -116,10 +116,10 @@ fn test_dimension() {
     let rle = Rle {
       pattern: vec![
         RleEntry::Live(3),
-        RleEntry::NewRow,
+        RleEntry::NewRow(1),
         RleEntry::Dead(2),
         RleEntry::Live(1),
-        RleEntry::NewRow,
+        RleEntry::NewRow(1),
         RleEntry::Dead(1),
         RleEntry::Live(1),
       ]

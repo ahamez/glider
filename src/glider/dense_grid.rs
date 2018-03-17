@@ -57,8 +57,8 @@ impl DenseGrid {
         &RleEntry::Dead(nb) => {
           col = col + nb;
         }
-        &RleEntry::NewRow  => {
-          row = row + 1;
+        &RleEntry::NewRow(nb)  => {
+          row = row + nb;
           col = col_shift;
         }
       };
@@ -183,10 +183,10 @@ fn test_new_from_rle() {
   let rle = Rle {
     pattern: vec![
       RleEntry::Live(3),
-      RleEntry::NewRow,
+      RleEntry::NewRow(1),
       RleEntry::Dead(2),
       RleEntry::Live(1),
-      RleEntry::NewRow,
+      RleEntry::NewRow(1),
       RleEntry::Dead(1),
       RleEntry::Live(1),
     ]
