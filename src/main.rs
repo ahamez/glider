@@ -1,3 +1,10 @@
+use std::fs::File;
+use std::io::BufReader;
+use std::time::Duration;
+
+#[macro_use]
+extern crate clap;
+
 extern crate sdl2;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
@@ -6,47 +13,29 @@ use sdl2::rect::Rect;
 
 pub mod glider;
 use glider::dense_grid::DenseGrid;
-use glider::rle::{Rle, RleEntry};
+use glider::rle::Rle;
 use glider::universe::Universe;
-
-
-use std::time::Duration;
 
 /* --------------------------------------------------------------------------------------------- */
 
 fn main() {
 
-  let rle = Rle {
-    pattern: vec![
-      RleEntry::Live(3),
-      RleEntry::NewRow(1),
-      RleEntry::Dead(2),
-      RleEntry::Live(1),
-      RleEntry::NewRow(1),
-      RleEntry::Dead(1),
-      RleEntry::Live(1),
-    ]
-  };
+  let matches = clap_app!(myapp =>
+    (@arg RLE_FILE: +required "Sets the input file to use")
+  ).get_matches();
 
-  // let rle = Rle {
-  //   pattern: vec![
-  //     RleEntry::Live(3),
-  //     RleEntry::NewRow(1),
-  //     RleEntry::Live(1),
-  //     RleEntry::Dead(1),
-  //     RleEntry::Live(1),
-  //     RleEntry::NewRow(1),
-  //     RleEntry::Live(3),
-  //   ]
-  // };
+  println!("Using input file: {}", matches.value_of("RLE_FILE").unwrap());
 
-  let grid_rows = 100;
-  let grid_cols = 100;
+  let file = File::open(matches.value_of("RLE_FILE").unwrap()).unwrap();
+  let rle = Rle::read(BufReader::new(file)).unwrap();
+
+  let grid_rows = 1000;
+  let grid_cols = 1000;
 
   let window_rows = 1000;
   let window_cols = 1000;
 
-  let cell_size = 10u32;
+  let cell_size = 1u32;
 
   let background_color = Color::RGB(0, 0, 0);
   let cell_color = Color::RGB(255, 255, 255);
