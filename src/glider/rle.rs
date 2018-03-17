@@ -1,6 +1,6 @@
 /* --------------------------------------------------------------------------------------------- */
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum RleEntry {
   Live(usize),
   Dead(usize),
