@@ -63,20 +63,20 @@ impl Rle {
       let line = l?;
 
       if line.is_empty() {
-        continue
+        continue;
       }
       else if line.chars().next().unwrap() == '#' {
-        continue
+        continue;
       }
       else if line.chars().next().unwrap() == 'x' {
-        continue
+        continue;
       }
       else {
         let mut current_integer = String::from("");
         for c in line.chars() {
           match c {
             '!' => {
-              break 'main_loop
+              break 'main_loop;
             }
             n if n.is_numeric() => {
               current_integer.push(n);
