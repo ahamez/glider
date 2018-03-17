@@ -1,4 +1,5 @@
 use std::io::{BufRead, BufReader, Read};
+use std::io::{self, Error, ErrorKind};
 
 /* --------------------------------------------------------------------------------------------- */
 
@@ -55,11 +56,11 @@ impl Rle {
   }
 
   // Todo: use Result as return type.
-  pub fn read<R: Read>(reader: BufReader<R>) -> Self {
+  pub fn read<R: Read>(reader: BufReader<R>) -> io::Result<Self> {
     let mut pattern = vec![];
 
     'main_loop: for l in reader.lines() {
-      let line = l.unwrap();
+      let line = l?;
 
       if line.is_empty() {
         continue
@@ -86,7 +87,7 @@ impl Rle {
                 'o' => RleEntry::Live(nb),
                 'b' => RleEntry::Dead(nb),
                 '$' => RleEntry::NewRow(nb),
-                _   => RleEntry::NewRow(nb)/*TODO Error*/
+                 x  => return Err(Error::new(ErrorKind::InvalidData, format!("Invalid '{}'", x)))
               });
               current_integer.clear();
             }
@@ -95,7 +96,7 @@ impl Rle {
       }
     }
 
-    Rle{pattern}
+    Ok(Rle{pattern})
   }
 }
 
@@ -180,11 +181,17 @@ fn test_dimension() {
 #[test]
 fn read_glider() {
   {
+    let data = "3h";
+    let rle_read = Rle::read(BufReader::new(data.as_bytes()));
+
+    assert!(rle_read.is_err());
+  }
+  {
     let rle = Rle{pattern: vec![]};
     let data = "";
     let rle_read = Rle::read(BufReader::new(data.as_bytes()));
 
-    assert_eq!(rle.pattern, rle_read.pattern);
+    assert_eq!(rle.pattern, rle_read.unwrap().pattern);
   }
   {
     let rle = Rle{
@@ -196,7 +203,7 @@ fn read_glider() {
     let data = "x = 3, y = 3, rule = B3/S23\n3o!\n";
     let rle_read = Rle::read(BufReader::new(data.as_bytes()));
 
-    assert_eq!(rle.pattern, rle_read.pattern);
+    assert_eq!(rle.pattern, rle_read.unwrap().pattern);
   }
   {
     let rle = Rle{
@@ -208,7 +215,7 @@ fn read_glider() {
     let data = "#COMMENT\n10$!\n";
     let rle_read = Rle::read(BufReader::new(data.as_bytes()));
 
-    assert_eq!(rle.pattern, rle_read.pattern);
+    assert_eq!(rle.pattern, rle_read.unwrap().pattern);
   }
   {
     let rle = Rle{
@@ -220,7 +227,7 @@ fn read_glider() {
     let data = "\n42b\n";
     let rle_read = Rle::read(BufReader::new(data.as_bytes()));
 
-    assert_eq!(rle.pattern, rle_read.pattern);
+    assert_eq!(rle.pattern, rle_read.unwrap().pattern);
   }
   {
     let rle = Rle{
@@ -238,7 +245,7 @@ fn read_glider() {
     let data = "x = 3, y = 3, rule = B3/S23\n3o$2bo$bo!\n";
     let rle_read = Rle::read(BufReader::new(data.as_bytes()));
 
-    assert_eq!(rle.pattern, rle_read.pattern);
+    assert_eq!(rle.pattern, rle_read.unwrap().pattern);
   }
 }
 
