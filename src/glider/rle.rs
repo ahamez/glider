@@ -53,6 +53,50 @@ impl Rle {
       (rows + 1, max_cols)
     }
   }
+
+  // Todo: use Result as return type.
+  pub fn read<R: Read>(reader: BufReader<R>) -> Self {
+    let mut pattern = vec![];
+
+    'main_loop: for l in reader.lines() {
+      let line = l.unwrap();
+
+      if line.is_empty() {
+        continue
+      }
+      else if line.chars().next().unwrap() == '#' {
+        continue
+      }
+      else if line.chars().next().unwrap() == 'x' {
+        continue
+      }
+      else {
+        let mut current_integer = String::from("");
+        for c in line.chars() {
+          match c {
+            '!' => {
+              break 'main_loop
+            }
+            n if n.is_numeric() => {
+              current_integer.push(n);
+            }
+            c => {
+              let nb = current_integer.parse::<usize>().unwrap_or(1);
+              pattern.push(match c {
+                'o' => RleEntry::Live(nb),
+                'b' => RleEntry::Dead(nb),
+                '$' => RleEntry::NewRow(nb),
+                _   => RleEntry::NewRow(nb)/*TODO Error*/
+              });
+              current_integer.clear();
+            }
+          }
+        }
+      }
+    }
+
+    Rle{pattern}
+  }
 }
 
 /* --------------------------------------------------------------------------------------------- */
@@ -128,6 +172,73 @@ fn test_dimension() {
     };
 
     assert_eq!(rle.dimension(), (3, 3));
+  }
+}
+
+/* --------------------------------------------------------------------------------------------- */
+
+#[test]
+fn read_glider() {
+  {
+    let rle = Rle{pattern: vec![]};
+    let data = "";
+    let rle_read = Rle::read(BufReader::new(data.as_bytes()));
+
+    assert_eq!(rle.pattern, rle_read.pattern);
+  }
+  {
+    let rle = Rle{
+        pattern: vec![
+          RleEntry::Live(3),
+        ]
+    };
+
+    let data = "x = 3, y = 3, rule = B3/S23\n3o!\n";
+    let rle_read = Rle::read(BufReader::new(data.as_bytes()));
+
+    assert_eq!(rle.pattern, rle_read.pattern);
+  }
+  {
+    let rle = Rle{
+        pattern: vec![
+          RleEntry::NewRow(10),
+        ]
+    };
+
+    let data = "#COMMENT\n10$!\n";
+    let rle_read = Rle::read(BufReader::new(data.as_bytes()));
+
+    assert_eq!(rle.pattern, rle_read.pattern);
+  }
+  {
+    let rle = Rle{
+        pattern: vec![
+          RleEntry::Dead(42),
+        ]
+    };
+
+    let data = "\n42b\n";
+    let rle_read = Rle::read(BufReader::new(data.as_bytes()));
+
+    assert_eq!(rle.pattern, rle_read.pattern);
+  }
+  {
+    let rle = Rle{
+        pattern: vec![
+          RleEntry::Live(3),
+          RleEntry::NewRow(1),
+          RleEntry::Dead(2),
+          RleEntry::Live(1),
+          RleEntry::NewRow(1),
+          RleEntry::Dead(1),
+          RleEntry::Live(1),
+        ]
+    };
+
+    let data = "x = 3, y = 3, rule = B3/S23\n3o$2bo$bo!\n";
+    let rle_read = Rle::read(BufReader::new(data.as_bytes()));
+
+    assert_eq!(rle.pattern, rle_read.pattern);
   }
 }
 
