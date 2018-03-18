@@ -5,9 +5,9 @@ use super::grid::{Grid, RowCol};
 /* --------------------------------------------------------------------------------------------- */
 
 pub struct Universe<G> {
-  generation: u64,
-  live_cells: u64,
-  grid: G,
+  pub generation: u64,
+  pub live_cells: u64,
+  pub grid: G,
 }
 
 /* --------------------------------------------------------------------------------------------- */
@@ -43,14 +43,6 @@ impl<G: Grid> Universe<G> {
       generation: self.generation + 1,
       live_cells
     }
-  }
-
-  pub fn generation(&self) -> u64 {
-    self.generation
-  }
-
-  pub fn live_cells(&self) -> u64 {
-    self.live_cells
   }
 
   pub fn at(&self, row: usize, col: usize) -> bool {
