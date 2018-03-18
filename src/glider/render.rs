@@ -45,7 +45,7 @@ pub fn render_universe<G: Grid>(mut u: Universe<G>) {
     .unwrap();
 
   let ttf_context = sdl2::ttf::init().unwrap();
-  let font_path = Path::new("./src/res/PTMono.ttc");
+  let font_path = Path::new("./src/res/LeagueMono-Regular.ttf");
   let font = ttf_context.load_font(font_path, 12).unwrap();
   let texture_creator = canvas.texture_creator();
 
