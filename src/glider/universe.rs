@@ -66,17 +66,20 @@ mod test {
 
   use super::*;
   use glider::dense_grid::DenseGrid;
+  use glider::rle::{Rle, RleEntry};
 
   #[test]
   fn test_tick() {
-    let u = Universe::new(DenseGrid::new_from(&vec![
-        //   0      1      2      3      4
-      vec![true , false, true , false, false], // 0
-      vec![false, false, true , false, false], // 1
-      vec![false, false, true , false, false], // 2
-      vec![false, false, false, true , true ], // 3
-      vec![false, false, false, true , true ], // 4
-    ]));
+    let rle = Rle {
+      pattern: vec![
+        RleEntry::Live(1), RleEntry::Dead(1), RleEntry::Live(1), RleEntry::Dead(2), RleEntry::NewRow(1),
+        RleEntry::Dead(2), RleEntry::Live(1), RleEntry::Dead(2), RleEntry::NewRow(1),
+        RleEntry::Dead(2), RleEntry::Live(1), RleEntry::Dead(2), RleEntry::NewRow(1),
+        RleEntry::Dead(3), RleEntry::Live(2), RleEntry::NewRow(1),
+        RleEntry::Dead(3), RleEntry::Live(2), RleEntry::NewRow(1),
+      ]
+    };
+    let u = Universe::new(DenseGrid::new_from_rle(&rle, 5, 5));
 
     // Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.
     assert!(!u.tick_cell(0, 0));

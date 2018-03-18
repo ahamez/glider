@@ -16,22 +16,6 @@ pub struct DenseGrid {
 
 impl DenseGrid {
 
-  pub fn new_from(g: &Vec<Vec<bool>>) -> Self {
-    assert!(g.len() >= 1);
-    assert!(g[0].len() >= 1);
-    // TODO. Check size consistency
-
-    let mut grid = Self::new(g.len() + 2, g[0].len() + 2);
-
-    for row in 0 .. g.len() {
-      for col in 0 .. g[0].len() {
-        grid.set(RowCol{row, col}, g[row][col]);
-      }
-    }
-
-    grid
-  }
-
   pub fn new_from_rle(rle: &Rle, rows: usize, columns: usize) -> Self {
     let (rle_rows, rle_cols) = rle.dimension();
     let rows = usize::max(rows, rle_rows);
@@ -125,87 +109,109 @@ impl Grid for DenseGrid {
 /* --------------------------------------------------------------------------------------------- */
 /* --------------------------------------------------------------------------------------------- */
 
-#[test]
-fn test_count_live_neighbours() {
-  {
-    // 1x1 universe
-    let g = DenseGrid::new_from(&vec![
-      vec![false],
-    ]);
+#[cfg(test)]
+mod test {
 
-    assert_eq!(g.count_live_neighbours(RowCol{row: 0, col: 0}), 0);
+  use super::*;
+
+  impl DenseGrid {
+    pub fn new_from(g: &Vec<Vec<bool>>) -> Self {
+      assert!(g.len() >= 1);
+      assert!(g[0].len() >= 1);
+      // TODO. Check size consistency
+
+      let mut grid = Self::new(g.len() + 2, g[0].len() + 2);
+
+      for row in 0 .. g.len() {
+        for col in 0 .. g[0].len() {
+          grid.set(RowCol{row, col}, g[row][col]);
+        }
+      }
+
+      grid
+    }
   }
-  {
-    // 1x1 universe
-    let g = DenseGrid::new_from(&vec![
-      vec![true],
-    ]);
 
-    assert_eq!(g.count_live_neighbours(RowCol{row: 0, col: 0}), 0);
+  #[test]
+  fn test_count_live_neighbours() {
+    {
+      // 1x1 universe
+      let g = DenseGrid::new_from(&vec![
+        vec![false],
+      ]);
+
+      assert_eq!(g.count_live_neighbours(RowCol{row: 0, col: 0}), 0);
+    }
+    {
+      // 1x1 universe
+      let g = DenseGrid::new_from(&vec![
+        vec![true],
+      ]);
+
+      assert_eq!(g.count_live_neighbours(RowCol{row: 0, col: 0}), 0);
+    }
+    {
+      // 2x2 universe
+      let g = DenseGrid::new_from(&vec![
+          //   0       1
+        vec![true , false], // 0
+        vec![false, true ], // 1
+      ]);
+
+      assert_eq!(g.count_live_neighbours(RowCol{row: 0, col: 0}), 1);
+      assert_eq!(g.count_live_neighbours(RowCol{row: 0, col: 1}), 2);
+      assert_eq!(g.count_live_neighbours(RowCol{row: 1, col: 0}), 2);
+      assert_eq!(g.count_live_neighbours(RowCol{row: 1, col: 1}), 1);
+    }
+    {
+      // 3x3 universe
+      let g = DenseGrid::new_from(&vec![
+          //   0      1      2
+        vec![true , false, true ], // 0
+        vec![false, true , false], // 1
+        vec![false, false, false], // 2
+      ]);
+
+      assert_eq!(g.count_live_neighbours(RowCol{row: 0, col: 0}), 1);
+      assert_eq!(g.count_live_neighbours(RowCol{row: 0, col: 1}), 3);
+      assert_eq!(g.count_live_neighbours(RowCol{row: 0, col: 2}), 1);
+      assert_eq!(g.count_live_neighbours(RowCol{row: 1, col: 0}), 2);
+      assert_eq!(g.count_live_neighbours(RowCol{row: 1, col: 1}), 2);
+      assert_eq!(g.count_live_neighbours(RowCol{row: 1, col: 2}), 2);
+    }
   }
-  {
-    // 2x2 universe
-    let g = DenseGrid::new_from(&vec![
-        //   0       1
-      vec![true , false], // 0
-      vec![false, true ], // 1
-    ]);
 
-    assert_eq!(g.count_live_neighbours(RowCol{row: 0, col: 0}), 1);
-    assert_eq!(g.count_live_neighbours(RowCol{row: 0, col: 1}), 2);
-    assert_eq!(g.count_live_neighbours(RowCol{row: 1, col: 0}), 2);
-    assert_eq!(g.count_live_neighbours(RowCol{row: 1, col: 1}), 1);
+  #[test]
+  fn test_new_from_rle() {
+
+    // 3o$2bo$bo!
+    let rle = Rle {
+      pattern: vec![
+        RleEntry::Live(3),
+        RleEntry::NewRow(1),
+        RleEntry::Dead(2),
+        RleEntry::Live(1),
+        RleEntry::NewRow(1),
+        RleEntry::Dead(1),
+        RleEntry::Live(1),
+      ]
+    };
+
+    let dimension = rle.dimension();
+    let g = DenseGrid::new_from_rle(&rle, dimension.0, dimension.1);
+
+    assert_eq!(g.at(RowCol{row: 0, col: 0}), true);
+    assert_eq!(g.at(RowCol{row: 0, col: 1}), true);
+    assert_eq!(g.at(RowCol{row: 0, col: 2}), true);
+
+    assert_eq!(g.at(RowCol{row: 1, col: 0}), false);
+    assert_eq!(g.at(RowCol{row: 1, col: 1}), false);
+    assert_eq!(g.at(RowCol{row: 1, col: 2}), true);
+
+    assert_eq!(g.at(RowCol{row: 2, col: 0}), false);
+    assert_eq!(g.at(RowCol{row: 2, col: 1}), true);
+    assert_eq!(g.at(RowCol{row: 2, col: 2}), false);
   }
-  {
-    // 3x3 universe
-    let g = DenseGrid::new_from(&vec![
-        //   0      1      2
-      vec![true , false, true ], // 0
-      vec![false, true , false], // 1
-      vec![false, false, false], // 2
-    ]);
-
-    assert_eq!(g.count_live_neighbours(RowCol{row: 0, col: 0}), 1);
-    assert_eq!(g.count_live_neighbours(RowCol{row: 0, col: 1}), 3);
-    assert_eq!(g.count_live_neighbours(RowCol{row: 0, col: 2}), 1);
-    assert_eq!(g.count_live_neighbours(RowCol{row: 1, col: 0}), 2);
-    assert_eq!(g.count_live_neighbours(RowCol{row: 1, col: 1}), 2);
-    assert_eq!(g.count_live_neighbours(RowCol{row: 1, col: 2}), 2);
-  }
-}
-
-/* --------------------------------------------------------------------------------------------- */
-
-#[test]
-fn test_new_from_rle() {
-
-  // 3o$2bo$bo!
-  let rle = Rle {
-    pattern: vec![
-      RleEntry::Live(3),
-      RleEntry::NewRow(1),
-      RleEntry::Dead(2),
-      RleEntry::Live(1),
-      RleEntry::NewRow(1),
-      RleEntry::Dead(1),
-      RleEntry::Live(1),
-    ]
-  };
-
-  let dimension = rle.dimension();
-  let g = DenseGrid::new_from_rle(&rle, dimension.0, dimension.1);
-
-  assert_eq!(g.at(RowCol{row: 0, col: 0}), true);
-  assert_eq!(g.at(RowCol{row: 0, col: 1}), true);
-  assert_eq!(g.at(RowCol{row: 0, col: 2}), true);
-
-  assert_eq!(g.at(RowCol{row: 1, col: 0}), false);
-  assert_eq!(g.at(RowCol{row: 1, col: 1}), false);
-  assert_eq!(g.at(RowCol{row: 1, col: 2}), true);
-
-  assert_eq!(g.at(RowCol{row: 2, col: 0}), false);
-  assert_eq!(g.at(RowCol{row: 2, col: 1}), true);
-  assert_eq!(g.at(RowCol{row: 2, col: 2}), false);
-}
+} // mod test
 
 /* --------------------------------------------------------------------------------------------- */
