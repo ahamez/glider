@@ -1,5 +1,6 @@
 extern crate std;
 use std::path::Path;
+use std::time::Duration;
 
 extern crate sdl2;
 use sdl2::event::Event;
@@ -113,6 +114,9 @@ pub fn render_universe<G: Grid>(mut u: Universe<G>) {
       }
 
       canvas.present();
+    }
+    else {
+      std::thread::sleep(Duration::from_millis(100));
     }
   }
 }
