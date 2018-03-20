@@ -12,6 +12,13 @@ use super::universe::Universe;
 
 /* --------------------------------------------------------------------------------------------- */
 
+enum State {
+  Paused,
+  Running,
+}
+
+/* --------------------------------------------------------------------------------------------- */
+
 pub fn render_universe<G: Grid>(mut u: Universe<G>) {
 
   let window_rows = 1000;
@@ -56,6 +63,8 @@ pub fn render_universe<G: Grid>(mut u: Universe<G>) {
     .event_pump()
     .unwrap();
 
+  let mut state = State::Running;
+
   'running: loop {
 
     for event in event_pump.poll_iter() {
@@ -63,11 +72,21 @@ pub fn render_universe<G: Grid>(mut u: Universe<G>) {
         Event::Quit {..} | Event::KeyDown {keycode: Some(Keycode::Escape), ..} => {
           break 'running
         }
+
+        Event::KeyDown {keycode: Some(Keycode::Space), repeat: false, ..} => {
+          state = match state {
+            State::Paused  => State::Running,
+            State::Running => State::Paused,
+          }
+        }
+
         _ => {}
       }
     }
 
-    u = u.tick();
+    if let State::Running = state {
+      u = u.tick();
+    }
 
     canvas.set_draw_color(background_color);
     canvas.clear();
