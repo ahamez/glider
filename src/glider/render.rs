@@ -86,34 +86,34 @@ pub fn render_universe<G: Grid>(mut u: Universe<G>) {
 
     if let State::Running = state {
       u = u.tick();
-    }
 
-    canvas.set_draw_color(background_color);
-    canvas.clear();
+      canvas.set_draw_color(background_color);
+      canvas.clear();
 
-    canvas.set_draw_color(cell_color);
+      canvas.set_draw_color(cell_color);
 
-    let surface = font.render(&format!("g:{} l:{}", u.generation, u.live_cells))
-      .blended(font_color).unwrap();
-    let texture = texture_creator.create_texture_from_surface(&surface).unwrap();
-    let sdl2::render::TextureQuery{width, height, ..} = texture.query();
-    let target = Rect::new(10, 5, width, height);
-    canvas.copy(&texture, None, Some(target)).unwrap();
+      let surface = font.render(&format!("g:{} l:{}", u.generation, u.live_cells))
+        .blended(font_color).unwrap();
+      let texture = texture_creator.create_texture_from_surface(&surface).unwrap();
+      let sdl2::render::TextureQuery{width, height, ..} = texture.query();
+      let target = Rect::new(10, 5, width, height);
+      canvas.copy(&texture, None, Some(target)).unwrap();
 
-    for row in 0 .. u.grid.nb_rows() {
-      for col in 0 .. u.grid.nb_columns() {
-        if u.at(row, col) {
-          let _ = canvas.fill_rect(
-            Rect::new(
-              col as i32 * cell_size as i32,
-              row as i32 * cell_size as i32,
-              cell_size,
-              cell_size));
+      for row in 0 .. u.grid.nb_rows() {
+        for col in 0 .. u.grid.nb_columns() {
+          if u.at(row, col) {
+            let _ = canvas.fill_rect(
+              Rect::new(
+                col as i32 * cell_size as i32,
+                row as i32 * cell_size as i32,
+                cell_size,
+                cell_size));
+          }
         }
       }
-    }
 
-    canvas.present();
+      canvas.present();
+    }
   }
 }
 
