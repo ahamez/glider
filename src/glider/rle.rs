@@ -59,6 +59,8 @@ impl Rle {
 
   pub fn read<R: Read>(reader: BufReader<R>) -> io::Result<(Self, Rule)> {
     let mut pattern = vec![];
+    let mut rule_b = vec![];
+    let mut rule_s = vec![];
 
     'main_loop: for l in reader.lines() {
       let line = l?;
@@ -70,8 +72,24 @@ impl Rle {
         continue;
       }
       else if line.starts_with('x') {
-        // TODO. Parse rule.
-        continue;
+        let all : Vec<_> = line.split(|c| c == '=' || c == ',').collect();
+        if all.len() != 6 {
+          return Err(Error::new(ErrorKind::InvalidData, format!("Unable to parse {}", line)));
+        }
+        
+        let r : Vec<_> = all[5].trim().split('/').collect();
+        if r.len() != 2 || !r[0].starts_with('B') || !r[1].starts_with('S') {
+          return Err(Error::new(ErrorKind::InvalidData, format!("Unable to parse {}", line)));
+        }
+
+        for c in r[0].chars().skip(1) {
+          rule_b.push(c.to_string().parse::<u8>().unwrap());
+        }
+
+        for c in r[1].chars().skip(1) {
+          rule_s.push(c.to_string().parse::<u8>().unwrap());
+        }
+        println!("Rule: B{:?}/S{:?}", rule_b, rule_s);
       }
       else {
         let mut current_integer = String::from("");
@@ -98,7 +116,13 @@ impl Rle {
       }
     }
 
-    Ok((Rle{pattern}, Rule::new(vec![3], vec![2, 3])))
+    if rule_b.is_empty() && rule_s.is_empty() {
+      println!("Use default rule B3/S23");
+      Ok((Rle{pattern}, Rule::new(vec![3], vec![2, 3])))
+    }
+    else {
+      Ok((Rle{pattern}, Rule::new(rule_b, rule_s)))
+    }
   }
 }
 
