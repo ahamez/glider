@@ -40,7 +40,7 @@ pub fn render_universe<G: Grid>(mut u: Universe<G>) {
     .unwrap();
 
   let window = video_subsystem
-    .window("Glider", window_rows, window_cols)
+    .window("glider", window_rows, window_cols)
     .position_centered()
     .opengl()
     .build()
