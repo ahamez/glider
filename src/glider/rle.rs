@@ -1,6 +1,8 @@
 use std::io::{BufRead, BufReader, Read};
 use std::io::{self, Error, ErrorKind};
 
+use super::rule::Rule;
+
 /* --------------------------------------------------------------------------------------------- */
 
 #[derive(Debug, PartialEq)]
@@ -55,7 +57,7 @@ impl Rle {
     }
   }
 
-  pub fn read<R: Read>(reader: BufReader<R>) -> io::Result<Self> {
+  pub fn read<R: Read>(reader: BufReader<R>) -> io::Result<(Self, Rule)> {
     let mut pattern = vec![];
 
     'main_loop: for l in reader.lines() {
@@ -68,6 +70,7 @@ impl Rle {
         continue;
       }
       else if line.starts_with('x') {
+        // TODO. Parse rule.
         continue;
       }
       else {
@@ -95,7 +98,7 @@ impl Rle {
       }
     }
 
-    Ok(Rle{pattern})
+    Ok((Rle{pattern}, Rule::new(vec![3], vec![2, 3])))
   }
 }
 
@@ -190,7 +193,7 @@ fn read_glider() {
     let data = "";
     let rle_read = Rle::read(BufReader::new(data.as_bytes()));
 
-    assert_eq!(rle.pattern, rle_read.unwrap().pattern);
+    assert_eq!(rle.pattern, rle_read.unwrap().0.pattern);
   }
   {
     let rle = Rle{
@@ -202,7 +205,7 @@ fn read_glider() {
     let data = "x = 3, y = 3, rule = B3/S23\n3o!\n";
     let rle_read = Rle::read(BufReader::new(data.as_bytes()));
 
-    assert_eq!(rle.pattern, rle_read.unwrap().pattern);
+    assert_eq!(rle.pattern, rle_read.unwrap().0.pattern);
   }
   {
     let rle = Rle{
@@ -214,7 +217,7 @@ fn read_glider() {
     let data = "#COMMENT\n10$!\n";
     let rle_read = Rle::read(BufReader::new(data.as_bytes()));
 
-    assert_eq!(rle.pattern, rle_read.unwrap().pattern);
+    assert_eq!(rle.pattern, rle_read.unwrap().0.pattern);
   }
   {
     let rle = Rle{
@@ -226,7 +229,7 @@ fn read_glider() {
     let data = "\n42b\n";
     let rle_read = Rle::read(BufReader::new(data.as_bytes()));
 
-    assert_eq!(rle.pattern, rle_read.unwrap().pattern);
+    assert_eq!(rle.pattern, rle_read.unwrap().0.pattern);
   }
   {
     let rle = Rle{
@@ -244,7 +247,7 @@ fn read_glider() {
     let data = "x = 3, y = 3, rule = B3/S23\n3o$2bo$bo!\n";
     let rle_read = Rle::read(BufReader::new(data.as_bytes()));
 
-    assert_eq!(rle.pattern, rle_read.unwrap().pattern);
+    assert_eq!(rle.pattern, rle_read.unwrap().0.pattern);
   }
 }
 

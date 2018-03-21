@@ -21,13 +21,13 @@ fn main() {
   ).get_matches();
 
   let file = File::open(matches.value_of("RLE_FILE").unwrap()).unwrap();
-  let rle = Rle::read(BufReader::new(file)).unwrap();
+  let (rle, rule) = Rle::read(BufReader::new(file)).unwrap();
 
   let grid_rows = 1000;
   let grid_cols = 1000;
 
   let grid = DenseGrid::new_from_rle(&rle, grid_rows, grid_cols);
-  let u = Universe::new(grid);
+  let u = Universe::new(grid, rule);
 
   render::render_universe(u);
 }

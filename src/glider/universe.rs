@@ -1,6 +1,7 @@
 /* --------------------------------------------------------------------------------------------- */
 
 use super::grid::{Grid, RowCol};
+use super::rule::Rule;
 
 /* --------------------------------------------------------------------------------------------- */
 
@@ -8,19 +9,21 @@ pub struct Universe<G> {
   pub generation: u64,
   pub live_cells: u64,
   pub grid: G,
+  pub rule: Rule,
 }
 
 /* --------------------------------------------------------------------------------------------- */
 
 impl<G: Grid> Universe<G> {
 
-  pub fn new(grid: G) -> Self {
+  pub fn new(grid: G, rule: Rule) -> Self {
     let live_cells = grid.count_live_cells();
 
     Universe{
-      grid,
       generation: 0,
       live_cells,
+      grid,
+      rule,
     }
   }
 
@@ -39,9 +42,10 @@ impl<G: Grid> Universe<G> {
     }
 
     Universe {
-      grid: next_grid,
       generation: self.generation + 1,
-      live_cells
+      live_cells,
+      grid: next_grid,
+      rule: self.rule,
     }
   }
 
@@ -50,11 +54,9 @@ impl<G: Grid> Universe<G> {
   }
 
   fn tick_cell(&self, row: usize, col: usize) -> bool {
-    match (self.grid.at(RowCol{row, col}), self.grid.count_live_neighbours(RowCol{row, col})) {
-      (true , 2 ... 3) => true,
-      (false, 3      ) => true,
-      (_    , _      ) => false,
-    }
+    self.rule.lives(
+      self.grid.at(RowCol{row, col}),
+      self.grid.count_live_neighbours(RowCol{row, col}))
   }
 }
 
@@ -79,7 +81,10 @@ mod test {
         RleEntry::Dead(3), RleEntry::Live(2), RleEntry::NewRow(1),
       ]
     };
-    let u = Universe::new(DenseGrid::new_from_rle(&rle, 5, 5));
+    let u = Universe::new(
+      DenseGrid::new_from_rle(&rle, 5, 5),
+      Rule::new(vec![3], vec![2, 3])
+    );
 
     // Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.
     assert!(!u.tick_cell(0, 0));
