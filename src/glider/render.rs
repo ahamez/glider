@@ -13,6 +13,7 @@ use super::universe::Universe;
 
 /* --------------------------------------------------------------------------------------------- */
 
+#[derive(PartialEq)]
 enum State {
   Paused,
   Running,
@@ -64,7 +65,8 @@ pub fn render_universe<G: Grid>(mut u: Universe<G>) {
     .event_pump()
     .unwrap();
 
-  let mut state = State::Running;
+  let mut state = State::Paused;
+  let mut first = true;
 
   'running: loop {
 
@@ -85,8 +87,7 @@ pub fn render_universe<G: Grid>(mut u: Universe<G>) {
       }
     }
 
-    if let State::Running = state {
-      u = u.tick();
+    if State::Running == state || first {
 
       canvas.set_draw_color(background_color);
       canvas.clear();
@@ -114,6 +115,13 @@ pub fn render_universe<G: Grid>(mut u: Universe<G>) {
       }
 
       canvas.present();
+
+      if first {
+        first = false;
+      }
+      else {
+        u = u.tick();
+      }
     }
     else {
       std::thread::sleep(Duration::from_millis(100));
