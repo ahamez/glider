@@ -1,10 +1,7 @@
 use std::fs::File;
 use std::io::BufReader;
 
-#[macro_use]
-extern crate clap;
-
-extern crate sdl2;
+use clap::clap_app;
 
 mod glider;
 use glider::dense_grid::DenseGrid;
