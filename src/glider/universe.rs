@@ -66,9 +66,10 @@ impl<G: Grid> Universe<G> {
 #[cfg(test)]
 mod test {
 
-  use super::*;
-  use glider::dense_grid::DenseGrid;
-  use glider::rle::{Rle, RleEntry};
+  use crate::glider::dense_grid::DenseGrid;
+  use crate::glider::rle::{Rle, RleEntry};
+  use crate::glider::universe::Universe;
+  use crate::glider::rule::Rule;
 
   #[test]
   fn test_tick() {
