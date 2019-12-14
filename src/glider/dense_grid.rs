@@ -32,17 +32,17 @@ impl DenseGrid {
 
     for entry in &rle.pattern {
       match entry {
-        &RleEntry::Live(nb) => {
+        RleEntry::Live(nb) => {
           for col in col .. col + nb {
             grid.set(RowCol{row, col}, true);
           }
-          col = col + nb;
+          col += nb;
         }
-        &RleEntry::Dead(nb) => {
-          col = col + nb;
+        RleEntry::Dead(nb) => {
+          col += nb;
         }
-        &RleEntry::NewRow(nb)  => {
-          row = row + nb;
+        RleEntry::NewRow(nb)  => {
+          row += nb;
           col = col_shift;
         }
       };

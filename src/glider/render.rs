@@ -72,11 +72,11 @@ pub fn render_universe<G: Grid>(mut u: Universe<G>) {
 
     for event in event_pump.poll_iter() {
       match event {
-        Event::Quit {..} | Event::KeyDown {keycode: Some(Keycode::Escape), ..} => {
+        Event::Quit{..} | Event::KeyDown{keycode: Some(Keycode::Escape), ..} => {
           break 'running
         }
 
-        Event::KeyDown {keycode: Some(Keycode::Space), repeat: false, ..} => {
+        Event::KeyDown{keycode: Some(Keycode::Space), repeat: false, ..} => {
           state = match state {
             State::Paused  => State::Running,
             State::Running => State::Paused,

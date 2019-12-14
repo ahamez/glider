@@ -33,16 +33,16 @@ impl Rle {
     let mut rows = 0;
 
     for entry in &self.pattern {
-      match entry {
-        &RleEntry::Live(nb) => {
+      match *entry {
+        RleEntry::Live(nb) => {
           cols += nb;
           max_cols = usize::max(cols, max_cols);
         }
-        &RleEntry::Dead(nb) => {
+        RleEntry::Dead(nb) => {
           cols += nb;
           max_cols = usize::max(cols, max_cols);
         }
-        &RleEntry::NewRow(nb)  => {
+        RleEntry::NewRow(nb)  => {
           rows += nb;
           cols = 0;
         }
@@ -65,10 +65,7 @@ impl Rle {
     'main_loop: for l in reader.lines() {
       let line = l?;
 
-      if line.is_empty() {
-        continue;
-      }
-      else if line.starts_with('#') {
+      if line.is_empty() || line.starts_with('#') {
         continue;
       }
       else if line.starts_with('x') {
@@ -76,7 +73,7 @@ impl Rle {
         if all.len() != 6 {
           return Err(Error::new(ErrorKind::InvalidData, format!("Unable to parse {}", line)));
         }
-        
+
         let r : Vec<_> = all[5].trim().split('/').collect();
         if r.len() != 2 || !r[0].starts_with('B') || !r[1].starts_with('S') {
           return Err(Error::new(ErrorKind::InvalidData, format!("Unable to parse {}", line)));
