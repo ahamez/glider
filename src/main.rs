@@ -1,24 +1,25 @@
 use std::fs::File;
 use std::io::BufReader;
 
-use clap::clap_app;
-
 mod glider;
+use clap::Parser;
 use glider::dense_grid::DenseGrid;
 use glider::rle::Rle;
 use glider::render;
 use glider::universe::Universe;
 
+#[derive(Parser)]
+struct Cli {
+    rle_file: Option<String>,
+}
+
 /* --------------------------------------------------------------------------------------------- */
 
 fn main() {
+    let cli = Cli::parse();
 
-  let matches = clap_app!(myapp =>
-    (@arg RLE_FILE: +required "Sets the input file to use")
-  ).get_matches();
-
-  let file = File::open(matches.value_of("RLE_FILE").unwrap()).unwrap();
-  let (rle, rule) = Rle::read(BufReader::new(file)).unwrap();
+    let file = File::open(cli.rle_file.unwrap()).unwrap();
+    let (rle, rule) = Rle::read(BufReader::new(file)).unwrap();
 
   let grid_rows = 1000;
   let grid_cols = 1000;
