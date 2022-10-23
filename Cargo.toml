@@ -9,6 +9,6 @@ clap = "2.31.1"
 #sdl2 = "0.31.0"
 
 [dependencies.sdl2]
-version = "0.31"
+version = "0.35.2"
 default-features = false
 features = ["ttf"]
