@@ -5,7 +5,7 @@ authors = ["Alexandre Hamez <alexandre.hamez@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-clap = "2.31.1"
+clap = "4.0.18"
 #sdl2 = "0.31.0"
 
 [dependencies.sdl2]
