@@ -5,7 +5,7 @@ use super::rule::Rule;
 
 /* --------------------------------------------------------------------------------------------- */
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub enum RleEntry {
   Live(usize),
   Dead(usize),

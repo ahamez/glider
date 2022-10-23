@@ -102,7 +102,7 @@ impl Grid for DenseGrid {
 
   fn count_live_cells(&self) -> u64 {
     self.grid.iter()
-      .fold(0, |acc, ref col| acc + col.iter().fold(0, |acc, ref cell| acc + **cell as u64))
+      .fold(0, |acc, col| acc + col.iter().fold(0, |acc, cell| acc + *cell as u64))
   }
 }
 
