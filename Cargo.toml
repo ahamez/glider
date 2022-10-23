@@ -10,4 +10,4 @@ clap = { version = "4.0.18", features = ["derive"] }
 [dependencies.sdl2]
 version = "0.35.2"
 default-features = false
-features = ["ttf"]
+features = ["ttf", "bundled"]
