@@ -8,6 +8,6 @@ edition = "2018"
 clap = { version = "4.0.29", features = ["derive"] }
 
 [dependencies.sdl2]
-version = "0.35.2"
+version = "0.37.0"
 default-features = false
 features = ["ttf", "bundled"]
