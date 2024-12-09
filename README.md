@@ -2,6 +2,8 @@
 
 [![Rust](https://github.com/ahamez/glider/actions/workflows/rust.yml/badge.svg)](https://github.com/ahamez/glider/actions/workflows/rust.yml)
 
+A game of life in Rust.
+
 ## Run
 
 ```sh
